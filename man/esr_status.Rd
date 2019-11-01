@@ -18,15 +18,13 @@
 }
 \usage{
 esr_status
-
-esr_status
 }
 \description{
 A dataset containing the main status of French ESR
 institutions, together with some additionnal informations.
-
-A dataset containing arbitrary levels to institutions statuts.
-Used to set sizes when plotting things.
+}
+\seealso{
+Other datasets: \code{\link{esr_level}}
 }
 \concept{datasets}
 \keyword{datasets}
