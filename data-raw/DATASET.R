@@ -5,7 +5,7 @@ esr_status <- read.table(
   sep = ",", quote = "\"",
   encoding = "utf-8", stringsAsFactors = FALSE
 )
-esr_status$keep <- as.logical(esr_status$keep)
+esr_status$deprecated <- as.logical(esr_status$deprecated)
 
 esr_level <- read.table(
   "./data-raw/esr_level.csv",

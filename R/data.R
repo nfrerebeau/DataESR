@@ -7,7 +7,7 @@
 #'  \describe{
 #'    \item{id}{Wikipedia ID of the item.}
 #'    \item{label}{the label of the item.}
-#'    \item{keep}{whether this item is of recommanded use.}
+#'    \item{deprecated}{whether this item is of recommanded use.}
 #'    \item{level}{level of the item (see \code{\link{esr_level}}).}
 #'    \item{wikipedia}{URL to the wikipedia notice.}
 #'    \item{note}{note to help the user.}
