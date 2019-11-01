@@ -1,115 +1,55 @@
-#' Get the ESR status of a wikidata item
-#'
-#' The status (_statut_) is the _legal status_ of an ESR institution.
-#' It is based on the instance_of property (P31) and converted thanks to a local dataset.
-#'
-#' @param item A wikidata item, as returned by wikidataR.
-#' @return The status the item.
-#' @examples
-#' wdesr_get_item_status(item)
-#' @seealso \code{\link{wdesr.statuts}}, \code{\link[WikidataR]{WikidataR}}
-#' @author J. Gossa
-#' @noRd
-wdesr_get_item_status <- function(item) {
-  item_id <- item[[1]]$id
-  instance_of_id <- wd_get_item_statement_as_list(item,"P31")[[1]][[1]]
-  if(is.null(instance_of_id)) {
-    warning("The instance of wikidata item ", item_id, " is not set.\n",
-            "  Default level (size of the node) is set to 7.\n",
-            "  Please check the property P31 at https://www.wikidata.org/wiki/",item_id,"\n",
-            "  using the guideline at https://github.com/juliengossa/DataESR/tree/master/etablissements.esr")
-
-    instance_of_id <- "NOID"
-  }
-
-  if (!instance_of_id %in% wdesr.cache$status$id) {
-    it <- WikidataR::get_item(id = instance_of_id)
-    label <- wd_get_item_alias(it)
-
-    warning("The instance of wikidata item ", item_id, " is unknown by wikidataESR: ",label,".\n",
-            "  Default level (size of the node) is set to 4.\n",
-            "  Please check the property P31 at https://www.wikidata.org/wiki/",item_id,"\n",
-            "  using the guideline at https://github.com/juliengossa/DataESR/tree/master/etablissements.esr")
-
-    wdesr.cache$status <- rbind(
-      wdesr.cache$status,
-      c(id         = instance_of_id,
-        libellé    = label,
-        recommandé = "",
-        niveau     = 5,
-        wikipedia  = "",
-        note       = "statut inexistant dans la base wikidataESR"))
-  }
-
-  status <- subset(wdesr.cache$status, id == instance_of_id)
-
-  if (status$recommandé == "non")
-    warning("The instance of wikidata item ", item_id, " is not recommended: ",status$libellé,".\n",
-            "  Reason is: ", ifelse(status$note != "",status$note, "Statut pas assez précis"),".\n",
-            "  Please check https://www.wikidata.org/wiki/",item_id,"\n",
-            "  using the guideline at https://github.com/juliengossa/DataESR/tree/master/etablissements.esr")
-
-  return(status)
-}
-
 #' Load the data of one university.
 #'
-#' @param wdid The wikidata id of the university.
-#' @return A dataframe with the data of the university.
+#' @param id The wikidata id of the university.
+#' @return A \code{\link{data.frame}}.
 #' @examples wdesr_load_item("Q3551576")
-#'
 #' @references
-#' - \url{https://github.com/juliengossa/DataESR/tree/master/etablissements.esr/wikidataESR}
-#' - \url{https://www.wikidata.org}
-#' @author J. Gossa
+#'  \href{https://www.wikidata.org}{wikidata}
+#' @author J. Gossa, N. Frerebeau
 #' @noRd
-wdesr_load_item <- function(wdid) {
+wdesr_load_item <- function(id) {
 
-  item <- WikidataR::get_item(id = wdid)
-  status <- wdesr_get_item_status(item)
+  item <- WikidataR::get_item(id = id)
+  status <- get_item_status(item)
 
-  return(
-    data.frame(
-      id          = wdid,
-      label       = wd_get_item_label(item),
-      alias       = wd_get_item_alias(item),
-      statut      = status$libellé,
-      niveau      = status$niveau,
+  data <- data.frame(
+    id               = wdid,
+    label            = get_item_label(item),
+    alias            = get_item_alias(item),
+    statut           = status$libellé,
+    niveau           = status$niveau,
 
-      fondation   = wd_get_item_statement_as_year(item,"P571"),
-      dissolution = wd_get_item_statement_as_year(item,"P576"),
+    fondation        = get_statement_year(item, "P571"),
+    dissolution      = get_statement_year(item, "P576"),
 
-      associé      = wd_get_item_statement_as_list(item,"P527"),
-      associé_de   = wd_get_item_statement_as_list(item,"P361"),
+    associé          = get_statement_list(item, "P527"),
+    associé_de       = get_statement_list(item, "P361"),
 
-      composante    = wd_get_item_statement_as_list(item,"P355"),
-      composante_de = wd_get_item_statement_as_list(item,"P749"),
+    composante       = get_statement_list(item, "P355"),
+    composante_de    = get_statement_list(item, "P749"),
 
-      prédécesseur     = wd_get_item_statement_as_list(item,"P1365"),
-      prédécesseur_pit = wd_get_item_statement_qualifier_as_list(item,"P1365","P585"),
-      successeur       = wd_get_item_statement_as_list(item,"P1366"),
-      successeur_pit   = wd_get_item_statement_qualifier_as_list(item,"P1366","P585"),
+    prédécesseur     = get_statement_list(item, "P1365"),
+    prédécesseur_pit = get_statement_qualifier(item, "P1365", "P585"),
+    successeur       = get_statement_list(item, "P1366"),
+    successeur_pit   = get_statement_qualifier(item, "P1366", "P585"),
 
-      séparé_de        = wd_get_item_statement_as_list(item,"P807"),
-      séparé_de_pit    = wd_get_item_statement_qualifier_as_list(item,"P807","P585"),
+    séparé_de        = get_statement_list(item, "P807"),
+    séparé_de_pit    = get_statement_qualifier(item, "P807", "P585"),
 
-      membre_de = wd_get_item_statement_as_list(item,"P463")
-    )
+    membre_de        = get_statement_list(item, "P463"),
+    stringsAsFactors = FALSE
   )
+  return(data)
 }
 
 #' Load the data of a set of universities.
 #'
 #' @param wdids A set of wikidata ids.
-#'
 #' @return A dataframe with the data of the universities.
-#'
 #' @examples wdesr_load_items(c("Q3551576","Q2013017"))
-#'
 #' @references
-#' - \url{https://github.com/juliengossa/DataESR/tree/master/etablissements.esr/wikidataESR}
-#' - \url{https://www.wikidata.org}
-#' @author Julien Gossa, \email{gossa@unistra.fr}
+#'  \href{https://www.wikidata.org}{wikidata}
+#' @author J. Gossa, N. Frerebeau
 #' @noRd
 wdesr_load_items <- function(wdids) {
   for(subids in wdids) {

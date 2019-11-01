@@ -1,101 +1,100 @@
-#' Get the label of a wikidata item.
-#'
-#' Look for french first, and return english otherwise.
-#'
-#' @param item A wikidata item.
-#'
-#' @return The label of the item.
-#'
-#' @examples wd_get_item_label(item)
-#'
-#' @references \url{https://github.com/juliengossa/DataESR/tree/master/etablissements.esr/wikidataESR}
-#' @seealso \code{\link[WikidataR]{WikidataR}}
-#' @author Julien Gossa, \email{gossa@unistra.fr}
-#' @noRd
-wd_get_item_label <- function(item) {
-  ifelse(!is.null(item[[1]]$labels$fr$value[[1]]),
-         item[[1]]$labels$fr$value[[1]],
-         item[[1]]$labels$en$value[[1]])
+# WIKIDATA HELPERS
+
+#' @rdname wikidata
+get_item_label.wikidata <- function(item) {
+  label_fr <- item[[1]]$labels$fr$value[[1]]
+  label_en <- item[[1]]$labels$en$value[[1]]
+  label <- ifelse(is.null(label_fr), label_en, label_fr)
+  return(label)
 }
 
-#' Get the alias of a wikidata item.
-#'
-#' Look for shortest french label/alias first, and return label otherwise.
-#'
-#' @param item A wikidata item.
-#'
-#' @return The alias of the item.
-#'
-#' @examples wd_get_item_alias(item)
-#'
-#' @references \url{https://github.com/juliengossa/DataESR/tree/master/etablissements.esr/wikidataESR}
-#' @seealso \code{\link[WikidataR]{WikidataR}}
-#' @author Julien Gossa, \email{gossa@unistra.fr}
-#' @noRd
-wd_get_item_alias <- function(item) {
-  a <- c(item[[1]]$aliases$fr$value, item[[1]]$labels$fr$value, wd_get_item_label(item))
-  return(a[stringr::str_length(a) == min(stringr::str_length(a))][1])
+#' @rdname wikidata
+get_item_alias.wikidata <- function(item) {
+  a <- c(item[[1]]$aliases$fr$value, get_item_label(item))
+  return(a[which.min(nchar(a))][1])
 }
 
-#' Get the year from a statement of a wikidata item.
-#'
-#' (It's very dirty. Sorry.)
-#'
-#' @param item A wikidata item.
-#' @param prop The property to get the year from.
-#'
-#' @return The year stated in the item.
-#'
-#' @examples wd_get_item_statement_as_year(item, "P571")
-#'
-#' @references \url{https://github.com/juliengossa/DataESR/tree/master/etablissements.esr/wikidataESR}
-#' @seealso \code{\link[WikidataR]{WikidataR}}
-#' @author Julien Gossa, \email{gossa@unistra.fr}
-#' @noRd
-wd_get_item_statement_as_year <- function(item,prop) {
+#' @rdname wikidata
+get_statement_year.wikidata <- function(item, property) {
   tryCatch(
-    date <- item[[1]]$claims[[prop]]$mainsnak$datavalue$value$time[1],
-    error = function(e) date<-NULL)
-
-  return(ifelse(is.null(date),NA,substr(as.character.Date(date),2,5)))
+    date <- item[[1]]$claims[[property]]$mainsnak$datavalue$value$time[1],
+    error = function(e) date <- NULL
+  )
+  date <- if (is.null(date)) NA else substr(as.character.Date(date), 2, 5)
+  return(date)
 }
 
-#' Get the list of statements for a given property.
-#'
-#' @param item A wikidata item.
-#' @param prop The property to get the statements from.
-#'
-#' @return The list of statements.
-#'
-#' @examples wd_get_item_statement_as_list(item,"P527")
-#'
-#' @references \url{https://github.com/juliengossa/DataESR/tree/master/etablissements.esr/wikidataESR}
-#' @seealso \code{\link[WikidataR]{WikidataR}}
-#' @author Julien Gossa, \email{gossa@unistra.fr}
-#' @noRd
-wd_get_item_statement_as_list <- function(item,prop) {
-  I(list(item[[1]]$claims[[prop]]$mainsnak$datavalue$value$id))
+#' @rdname wikidata
+get_statement_list.wikidata <- function(item, property) {
+  I(list(item[[1]]$claims[[property]]$mainsnak$datavalue$value$id))
 }
 
-#' Get the qualifiers of statements from a wikidata item.
-#'
-#' @param item A wikidata item.
-#' @param prop The property to get the statements.
-#' @param qual The qualifier to retrieve.
-#'
-#' @return A liste of item statement qualifiers.
-#'
-#' @examples wd_get_item_statement_qualifier_as_list(item,"P1365","P585")
-#'
-#' @references \url{https://github.com/juliengossa/DataESR/tree/master/etablissements.esr/wikidataESR}
-#' @seealso \code{\link[WikidataR]{WikidataR}}
-#' @author Julien Gossa, \email{gossa@unistra.fr}
-#' @noRd
-wd_get_item_statement_qualifier_as_list <- function(item,prop,qual) {
-  dates <- item[[1]]$claims[[prop]]$qualifiers[[qual]]
-  if(is.null(dates)) return(NA)
+#' @rdname wikidata
+get_statement_qualifier.wikidata <- function(item, property, qualifier) {
+  dates <- item[[1]]$claims[[property]]$qualifiers[[qualifier]]
+  if (is.null(dates))
+    return(NA)
+
   l <- unlist(
-    lapply(item[[1]]$claims[[prop]]$qualifiers[[qual]],
-           function(x) substr(x$datavalue$value$time,2,5)))
+    lapply(
+      X = item[[1]]$claims[[property]]$qualifiers[[qualifier]],
+      FUN = function(x) substr(x$datavalue$value$time, 2, 5)
+    )
+  )
   return(I(list(l)))
+}
+
+#' @rdname wikiesr
+get_item_status.wikidata <- function(item) {
+  item_id <- item[[1]]$id
+  instance_of_id <- get_statement_list(item, "P31")[[1]][[1]]
+
+  if (is.null(instance_of_id)) {
+    instance_of_id <- "NOID"
+    warning(
+      "The instance of wikidata item ", item_id, " is not set.\n",
+      "* Default level (size of the node) is set to 7.\n",
+      "* Please check the property P31 at https://www.wikidata.org/wiki/", item_id,
+      call. = FALSE
+    )
+  }
+
+  if (!(instance_of_id %in% esr_status$id)) {
+    it <- WikidataR::get_item(id = instance_of_id)
+    label <- get_item_alias(it)
+
+    warning(
+      "The instance of wikidata item ", item_id,
+      " is unknown by wikidataESR: ", label, ".\n",
+      "* Default level (size of the node) is set to 4.\n",
+      "* Please check the property P31 at https://www.wikidata.org/wiki/", item_id,
+      call. = FALSE
+    )
+
+    esr_status <- rbind.data.frame(
+      esr_status,
+      c(id         = instance_of_id,
+        label      = label,
+        deprecated = NA,
+        level      = 5,
+        wikipedia  = "",
+        note       = "statut inexistant dans la base wikidataESR"),
+      stringsAsFactors = FALSE
+    )
+  }
+
+  status <- subset(esr_status, id == instance_of_id)
+
+  if (status$deprecated) {
+    note <- ifelse(status$note != "", status$note, "status not specific enough")
+    warning(
+      "The instance of wikidata item ", item_id,
+      " is deprecated: ", status$label,".\n",
+      "* Reason is: ", note,".\n",
+      "* Please check https://www.wikidata.org/wiki/", item_id,
+      call. = FALSE
+    )
+  }
+
+  return(status)
 }
