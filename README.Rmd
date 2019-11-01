@@ -1,9 +1,39 @@
 ---
-title: "Tenter d'y voir clair dans l'ESR : tutorial R/WikidataESR"
-author: "Julien Gossa"
-date: "29/07/2019"
-output:  github_document
+output: github_document
 ---
 
-```{r child = '../R/tutorial.Rmd'}
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "man/figures/README-",
+  out.width = NULL
+)
 ```
+
+# wikidataESR
+
+<!-- badges: start -->
+<!-- badges: end -->
+
+The goal of wikidataESR is to ...
+
+## Installation
+<!--
+You can install the released version of **openESR** from [CRAN](https://CRAN.R-project.org) with:
+
+```{r cran-installation, eval = FALSE}
+install.packages("openESR")
+```
+
+Or-->You can install the development version from GitHub with:
+
+```{r gh-installation, eval = FALSE}
+# install.packages("devtools")
+remotes::install_github("nfrerebeau/DataESR")
+```
+
+## Example
+
