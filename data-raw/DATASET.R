@@ -2,9 +2,10 @@
 esr_status <- read.table(
   "./data-raw/esr_status.csv",
   header = TRUE, row.names = NULL,
-  sep = ';', quote = '"',
+  sep = ",", quote = "\"",
   encoding = "utf-8", stringsAsFactors = FALSE
 )
+esr_status$keep <- as.logical(esr_status$keep)
 
 esr_level <- read.table(
   "./data-raw/esr_level.csv",

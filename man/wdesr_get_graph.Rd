@@ -35,10 +35,8 @@ g$vertice
 
 }
 \references{
-\itemize{
-\item \url{https://github.com/juliengossa/DataESR/tree/master/etablissements.esr/wikidataESR}
-\item \url{https://www.wikidata.org}
-}
+- \url{https://github.com/juliengossa/DataESR/tree/master/etablissements.esr/wikidataESR}
+- \url{https://www.wikidata.org}
 }
 \seealso{
 \code{\link{wdesr_clear_cache}}

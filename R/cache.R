@@ -12,38 +12,6 @@
 #
 # Author: Julien Gossa <gossa@unistra.fr>
 
-
-#' Status of french ESR institutions.
-#'
-#' A dataset containing the main status (_statuts_) french ESR institutions,
-#' together with some additionnal informations.
-#'
-#' @format A data frame with 6 variables:
-#' - id: the wikipedia id of the item;
-#' - libellé: the label of the item;
-#' - recommandé: whether this item is recommanded to use ("oui") or not ("non");
-#' - niveau: level of the item (see \code{\link{wdesr.niveaux}})
-#' - wikipedia: url to the wikipedia notice;
-#' - note: note to help the user.
-#' @source \url{https://www.wikidata.org}
-"wdesr.statuts"
-
-
-#' Levels of french ESR institution status.
-#'
-#' A dataset containing arbitrary levels to institutions statuts.
-#' Used to set sizes when plotting things.
-#'niveau;label;description;exemple
-
-#' @format A data frame with 4 variables:
-#' - niveau: an integer to id the level;
-#' - libellé: the label of the level;
-#' - description: a description of the level;
-#' - exemple: some example of status of this level.
-"wdesr.statuts"
-
-
-
 #' Maintainance function to build local cache and datasets
 #'
 #' @return nothing

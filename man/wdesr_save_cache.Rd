@@ -20,16 +20,12 @@ This function saves this cache on the local drive
 wdesr_save_cache()
 }
 \references{
-\itemize{
-\item \url{https://github.com/juliengossa/DataESR/tree/master/etablissements.esr/wikidataESR}
-}
+- \url{https://github.com/juliengossa/DataESR/tree/master/etablissements.esr/wikidataESR}
 }
 \seealso{
-\itemize{
-\item \code{\link{wdesr_clear_cache}}
-\item \code{\link{wdesr_get_cache}}
-\item \code{\link{wdesr_load_cache}}
-}
+- \code{\link{wdesr_clear_cache}}
+- \code{\link{wdesr_get_cache}}
+- \code{\link{wdesr_load_cache}}
 }
 \author{
 Julien Gossa, \email{gossa@unistra.fr}

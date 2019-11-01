@@ -33,10 +33,8 @@ wdesr_load_and_plot("Q61716176",c('composante','associé'), 1,
   edge_label = FALSE)
 }
 \references{
-\itemize{
-\item \url{https://github.com/juliengossa/DataESR/tree/master/etablissements.esr/wikidataESR}
-\item \url{https://www.wikidata.org}
-}
+- \url{https://github.com/juliengossa/DataESR/tree/master/etablissements.esr/wikidataESR}
+- \url{https://www.wikidata.org}
 }
 \seealso{
 \code{\link{wdesr_clear_cache}}
