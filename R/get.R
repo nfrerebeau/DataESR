@@ -1,23 +1,24 @@
 #' Load the data of one university.
 #'
-#' @param id The wikidata id of the university.
+#' @param id A \code{\link{character}} string specifying the the wikidata id of
+#' the university.
 #' @return A \code{\link{data.frame}}.
-#' @examples wdesr_load_item("Q3551576")
+#' @examples wdesr_get_item("Q61716176")
 #' @references
 #'  \href{https://www.wikidata.org}{wikidata}
 #' @author J. Gossa, N. Frerebeau
 #' @noRd
-wdesr_load_item <- function(id) {
+wdesr_get_item <- function(id) {
 
   item <- WikidataR::get_item(id = id)
   status <- get_item_status(item)
 
   data <- data.frame(
-    id               = wdid,
+    id               = id,
     label            = get_item_label(item),
     alias            = get_item_alias(item),
-    statut           = status$libellé,
-    niveau           = status$niveau,
+    statut           = status$label,
+    level            = status$level,
 
     fondation        = get_statement_year(item, "P571"),
     dissolution      = get_statement_year(item, "P576"),
@@ -41,54 +42,28 @@ wdesr_load_item <- function(id) {
   )
   return(data)
 }
+mdesr_get_item <- memoise::memoise(wdesr_get_item)
+wdesr_clear_cache <- function() memoise::forget(mdesr_get_item)
 
 #' Load the data of a set of universities.
 #'
-#' @param wdids A set of wikidata ids.
-#' @return A dataframe with the data of the universities.
-#' @examples wdesr_load_items(c("Q3551576","Q2013017"))
+#' @param id A \code{\link{character}} vector specifying the wikidata IDs
+#'  to be accessed.
+#' @param simplify A \code{\link{logical}} scalar: should the result be
+#' simplified to a vector, matrix or higher dimensional array if possible?
+#' @return A \code{\link{dataframe}}.
+#' @examples r <- wdesr_get_data(c("Q3551576", "Q2013017"))
+#' @seealso \link{wdesr_get_item}
 #' @references
 #'  \href{https://www.wikidata.org}{wikidata}
 #' @author J. Gossa, N. Frerebeau
 #' @noRd
-wdesr_load_items <- function(wdids) {
-  for(subids in wdids) {
-    for(wdid in subids) {
-      print(paste("Loading: ",wdid))
-      r <- wdesr_load_item(wdid)
-      wdesr.cache$items <- rbind(wdesr.cache$items,r)
-    }
-  }
+wdesr_get_data <- function(id, simplify = TRUE) {
+  items <- lapply(X = id, FUN = mdesr_get_item)
+  if (simplify) items <- do.call(rbind.data.frame, items)
+  # paste0("Loading: ", wdid)
+  return(items)
 }
-
-#' Loader of universities data.
-#'
-#' Get the data of a set of universities.
-#'
-#' Data are cached: use \code{\link{wdesr_clear_cache}} to refresh data from wikidata.
-#'
-#' @param wdids A set of wikidata ids.
-#'
-#' @return A dataframe with the data of the universities.
-#' @export
-#'
-#' @examples items <- wdesr_get_data(c("Q3551576","Q2013017"))
-#'
-#' @references
-#' - \url{https://github.com/juliengossa/DataESR/tree/master/etablissements.esr/wikidataESR}
-#' - \url{https://www.wikidata.org}
-#' @seealso \code{\link{wdesr_clear_cache}}
-#' @author Julien Gossa, \email{gossa@unistra.fr}
-wdesr_get_data <- function(wdids) {
-  if (is.null(wdesr.cache$status)) {
-    wdesr_clear_cache()
-  }
-
-  wdesr_load_items(wdids[! wdids %in% wdesr.cache$items$id])
-
-  return(subset(wdesr.cache$items, id %in% wdids))
-}
-
 
 #' Get a graph of universities.
 #'
@@ -97,38 +72,44 @@ wdesr_get_data <- function(wdids) {
 #'
 #' Data are cached: use \code{\link{wdesr_clear_cache}} to refresh data from wikidata.
 #'
-#' @param wdid The wikidata id of the root.
-#' @param props The set of properties to follow.
+#' @param id The wikidata id of the root.
+#' @param property The set of properties to follow.
 #' @param depth The depth of the graph (more or less) (default to 3).
 #' @param active_only TRUE to filter dissolved universities (default to FALSE).
-#' @param stop_at A list of type of nodes that must not be visited furthermore (default to "EPST").
-#'
-#' @return A list of edges and vertices.
-#' @export
-#'
+#' @param stop_at A list of type of nodes that must not be visited furthermore
+#' (default to "EPST").
+#' @return A \code{\link{list}} of edges and vertices.
 #' @examples
-#' g <- wdesr_get_graph("Q61716176",c('composante','associé'), 1)
+#' g <- wdesr_get_graph("Q61716176", c('composante','associé'), 1)
 #' g$edges
 #' g$vertice
-#'
-#' @references
-#' - \url{https://github.com/juliengossa/DataESR/tree/master/etablissements.esr/wikidataESR}
-#' - \url{https://www.wikidata.org}
-#' @seealso \code{\link{wdesr_clear_cache}}
-#' @author Julien Gossa, \email{gossa@unistra.fr}
-wdesr_get_graph <- function(wdid, props, depth = 3, active_only = FALSE, stop_at = c("EPST") ) {
+#' @author J. Gossa, N. Frerebeau
+#' @export
+wdesr_get_graph <- function(id, property, depth = 3, active_only = FALSE,
+                            stop_at = c("EPST") ) {
 
   wgge <- new.env()
-  wgge$edges <- data.frame(from=character(),to=character(),stringsAsFactors = FALSE)
+  wgge$edges <- data.frame(
+    from = character(),
+    to = character(),
+    stringsAsFactors = FALSE
+  )
   wgge$vertices <- data.frame()
 
-  wdesr_get_subgraph(wgge, wdid, props, depth, active_only, stop_at)
+  wdesr_get_subgraph(wgge, id, property, depth, active_only, stop_at)
 
-  wgge$vertices <- wgge$vertices %>% mutate_all(as.character) %>% arrange(id)
+  wgge$vertices <- wgge$vertices[order(wgge$vertices$id), ]
+  clean <- lapply(X = wgge$vertices,
+                  FUN = function(x) if (is.list(x)) as.character(x) else x)
+  wgge$vertices <- as.data.frame(clean, stringsAsFactors = FALSE)
+  # wgge$vertices <- wgge$vertices %>% dplyr::mutate_if(is.list, as.character) %>%
+    # dplyr::arrange(id)
   #wgge$vertices$niveau <- factor(wgge$vertices$niveau, levels = wdesr.niveaux$niveau)
 
-  res <- list('edges'=wgge$edges, 'vertices'=wgge$vertices)
-
+  res <- structure(
+    list(edges = wgge$edges, vertices = wgge$vertices),
+    class = "esr_graph"
+  )
   return(res)
 }
 
@@ -138,113 +119,56 @@ wdesr_get_graph <- function(wdid, props, depth = 3, active_only = FALSE, stop_at
 #'
 #' @seealso \code{\link{wdesr_get_graph}}
 #' @author Julien Gossa, \email{gossa@unistra.fr}
-wdesr_get_subgraph <- function(wgge, wdid, props, depth = 3, active_only = FALSE, stop_at = c("EPST") ) {
+wdesr_get_subgraph <- function(wgge, id, property, depth = 3,
+                               active_only = FALSE, stop_at = c("EPST") ) {
 
-  df.from <- wdesr_get_data(c(wdid))
-
+  from <- wdesr_get_data(id)
   #df.from$depth <- depth
-  wgge$vertices <- rbind(wgge$vertices, df.from)
+  wgge$vertices <- rbind(wgge$vertices, from)
 
-  #print(wdid)
   #print(wgge$vertices$id)
-  #print(wgge$vertices[,1:2])
+  #print(wgge$vertices[, 1:2])
+
+  props <- property[property %in% colnames(from)]
+  if (length(props) == 0)
+    # TODO: better error message
+    stop("Invalid properties.")
 
   for(p in props) {
-    if(is.null(unlist(df.from[,p])))
-      next()
-
-    ppit <- paste(p,'_pit',sep='')
-
-    df.to <- wdesr_get_data(unlist(df.from[,p]))
-
+    ppit <- paste(p, "pit", sep = "_")
+    to <- wdesr_get_data(unlist(from[, p]))
     # Remove dissolved
-    if (active_only) df.to <- subset(df.to, is.na(dissolution))
-
+    if (active_only) to <- to[is.na(to$dissolution), ]
     # Remove existing to -> from edges
-    tmp <- subset(wgge$edges, to == wdid)$from
-    df.to <- subset(df.to, !id %in% tmp)
-
-    if (nrow(df.to) == 0) next()
+    tmp <- wgge$edges[wgge$edges$to == id, ]$from
+    to <- to[!(to$id %in% tmp), ]
+    # Skip if empty
+    if (nrow(to) == 0) next()
 
     edges <- data.frame(
-      from  = df.from$id,
-      to    = df.to$id,
+      from  = from$id,
+      to    = to$id,
       type  = p,
-      date  = ifelse(ppit %in% colnames(df.from),unlist(df.from[,ppit]),NA),
+      date  = ifelse(ppit %in% colnames(from), unlist(from[, ppit]), NA),
       depth = depth
-      )
-    wgge$edges <- rbind(wgge$edges,edges)
+    )
+    wgge$edges <- rbind(wgge$edges, edges)
 
     #df.to$depth <- depth - 1
-
-    if(depth==1) {
-      wgge$vertices <- rbind(wgge$vertices, subset(df.to, !id %in% wgge$vertices$id))
+    if(depth == 1) {
+      wgge$vertices <- rbind(
+        wgge$vertices,
+        subset(to, !id %in% wgge$vertices$id)
+      )
     } else {
-      wgge$vertices <- rbind(wgge$vertices, subset(df.to, !id %in% wgge$vertices$id & statut %in% stop_at))
-
-      for(id in subset(df.to, !statut %in% stop_at)$id) {
+      wgge$vertices <- rbind(
+        wgge$vertices,
+        subset(to, !id %in% wgge$vertices$id && statut %in% stop_at)
+      )
+      for(id in subset(to, !statut %in% stop_at)$id) {
         if (!id %in% wgge$vertices$id)
-          wdesr_get_subgraph(wgge, id,props,depth-1,active_only,stop_at)
+          wdesr_get_subgraph(wgge, id, property, depth-1, active_only, stop_at)
       }
     }
   }
-}
-
-#' Label builder.
-#'
-#' Build the label of the nodes.
-#'
-#' @param node_label Either "alias", "alias_date", "long", or "long_date" (default to "alias").
-#' @param alias The alias of the item.
-#' @param label The label of the item.
-#' @param fondation The foundation date of the item.
-#' @param dissolution The dissolution date of the item.
-#'
-#' @return a label for a node, as a string
-#'
-#' @examples node_label_aes("alias", alias, label, fondation, dissolution)
-#' @references
-#' - \url{https://github.com/juliengossa/DataESR/tree/master/etablissements.esr/wikidataESR}
-#' - \url{https://www.wikidata.org}
-#' @seealso \code{\link{wdesr_clear_cache}}
-#' @author Julien Gossa, \email{gossa@unistra.fr}
-#' @noRd
-wdesr_node_label_aes <- function(node_label = "alias", alias, label, fondation, dissolution) {
-  switch(node_label,
-         alias = {
-           alias},
-         alias_date = {
-           paste(alias,paste('(',fondation,'-',dissolution,')',sep=''),sep='\n')},
-         long = {
-           label},
-         long_date = {
-           paste(label,paste('(',fondation,'-',dissolution,')',sep=''),sep='\n')},
-         ""
-  )
-}
-
-#' Get geom_nodeX function.
-#'
-#' Get the suitable geom_nodeX function according the node_type
-#'
-#' @param node_type Either "text", "text_repel", "label", or "label_repel" (default to "text").
-#'
-#' @return The suitable geom_nodeX function according the node_type.
-#'
-#' @examples wdesr_node_geom("text_repel")
-#'
-#' @references
-#' - \url{https://github.com/juliengossa/DataESR/tree/master/etablissements.esr/wikidataESR}
-#' - \url{https://www.wikidata.org}
-#' @seealso \code{\link{wdesr_clear_cache}}
-#' @author Julien Gossa, \email{gossa@unistra.fr}
-#' @noRd
-wdesr_node_geom <- function(node_type = "text") {
-  switch(node_type,
-         text = {geom_nodetext},
-         text_repel = {geom_nodetext_repel},
-         label = {geom_nodelabel},
-         label_repel = {geom_nodelabel_repel},
-         geom_blank
-  )
 }
