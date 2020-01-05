@@ -1,6 +1,6 @@
 Type: Package
 Package: WikidataESR
-Title: From wikidata to R, for french ESR
+Title: From Wikidata to R, for french ESR
 Version: 0.1.0
 Authors@R: 
     c(person(given = "Julien",

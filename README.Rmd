@@ -17,22 +17,16 @@ knitr::opts_chunk$set(
 )
 ```
 
-# wikidataESR
+# WikidataESR
 
 <!-- badges: start -->
 <!-- badges: end -->
 
-The goal of wikidataESR is to ...
+**WikidataESR** est une librairie R s'appuyant sur [**wikidataR**](https://github.com/Ironholds/WikidataR) pour récupérer les données de l'ESR dans [Wikidata](https://www.wikidata.org) et produire des graphiques.
 
 ## Installation
-<!--
-You can install the released version of **openESR** from [CRAN](https://CRAN.R-project.org) with:
 
-```{r cran-installation, eval = FALSE}
-install.packages("openESR")
-```
-
-Or-->You can install the development version from GitHub with:
+**WikidataESR** peut s'installer directement depuis GitHub avec [**devtools**](https://github.com/r-lib/devtools) :
 
 ```{r gh-installation, eval = FALSE}
 # install.packages("devtools")
@@ -46,7 +40,7 @@ remotes::install_github("nfrerebeau/DataESR")
 library(WikidataESR)
 ```
 
-### Get Data
+### Récupérer les données
 
 Pour récupérer les données, vous devez disposer d'un identifiant wikidata racine, et savoir quelles [propriétés](https://github.com/juliengossa/DataESR/tree/master/etablissements.esr#liste-proprietes) vous souhaitez explorer.
 
@@ -62,11 +56,23 @@ Par exemple, il est possible d'explorer les établissements du Site Alsace :
 alsace <- wdesr_get_graph("Q61716176", c('composante','associé'), 1)
 ```
 
+Pour faciliter les contributions, la fonction déclenche des warning pour chaque problème potentiel lié aux données saisie dans wikidata.
+
+Elle retourne un objet contenant vertices et edges, qui représentent les établissements et leurs relations.
+
+```{r alsace-verices, echo=FALSE}
+knitr::kable(alsace[["vertices"]][, 1:5])
+```
+
+```{r alsace-edges, echo=FALSE}
+knitr::kable(alsace[["edges"]][, 1:5])
+```
+
 ### Tracer des représentations
 
 Il est possible de tracer directement le graphe retourné par `wdesr_get_graph` :
 
-```{r plot, fig.width=5, fig.height=5}
+```{r plot, fig.width=7, fig.height=5}
 plot(alsace)
 ```
 
@@ -75,8 +81,8 @@ plot(alsace)
 Il est souvent utile d'aller plus en profondeur pour explorer plus de relations. Cela se fait en modifiant l'argument `depth` :
 
 ```{r wdesr-depth, fig.width=7, fig.height=7}
-bordeaux <- wdesr_get_graph("Q16541346", c('composante', 'associé'), depth = 2)
-plot(bordeaux)
+alsace <- wdesr_get_graph("Q61716176", c('composante', 'associé'), depth = 2)
+plot(alsace)
 ```
 
 ### Gestion du cache

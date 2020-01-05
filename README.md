@@ -1,27 +1,21 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# wikidataESR
+# WikidataESR
 
 <!-- badges: start -->
 
 <!-- badges: end -->
 
-The goal of wikidataESR is to …
+**WikidataESR** est une librairie R s’appuyant sur
+[**wikidataR**](https://github.com/Ironholds/WikidataR) pour récupérer
+les données de l’ESR dans [Wikidata](https://www.wikidata.org) et
+produire des graphiques.
 
 ## Installation
 
-<!--
-You can install the released version of **openESR** from [CRAN](https://CRAN.R-project.org) with:
-
-
-```r
-install.packages("openESR")
-```
-
-Or-->
-
-You can install the development version from GitHub with:
+**WikidataESR** peut s’installer directement depuis GitHub avec
+[**devtools**](https://github.com/r-lib/devtools) :
 
 ``` r
 # install.packages("devtools")
@@ -35,7 +29,7 @@ remotes::install_github("nfrerebeau/DataESR")
 library(WikidataESR)
 ```
 
-### Get Data
+### Récupérer les données
 
 Pour récupérer les données, vous devez disposer d’un identifiant
 wikidata racine, et savoir quelles
@@ -58,6 +52,32 @@ Alsace :
 alsace <- wdesr_get_graph("Q61716176", c('composante','associé'), 1)
 ```
 
+Pour faciliter les contributions, la fonction déclenche des warning pour
+chaque problème potentiel lié aux données saisie dans wikidata.
+
+Elle retourne un objet contenant vertices et edges, qui représentent les
+établissements et leurs
+relations.
+
+| id        | label                                                   | alias                    | statut                     | level |
+| :-------- | :------------------------------------------------------ | :----------------------- | :------------------------- | ----: |
+| Q157575   | université de Strasbourg                                | UdS                      | Université (EPSCP)         |     3 |
+| Q21041502 | Haute école des arts du Rhin                            | HEAR                     | école d’art                |     4 |
+| Q280183   | université de Haute-Alsace                              | UHA                      | Université (EPSCP)         |     3 |
+| Q3578190  | École nationale supérieure d’architecture de Strasbourg | ENSAS                    | École nationale supérieure |     4 |
+| Q521036   | Institut national des sciences appliquées de Strasbourg | INSA Strasbourg          | école d’ingé               |     4 |
+| Q61716176 | université de Strasbourg                                | université de Strasbourg | Regroupement universitaire |     2 |
+| Q630461   | bibliothèque nationale et universitaire de Strasbourg   | BNUS                     | bibliothèque nationale     |     5 |
+
+| from      | to        | type    | date | depth |
+| :-------- | :-------- | :------ | :--- | ----: |
+| Q61716176 | Q280183   | associé | NA   |     1 |
+| Q61716176 | Q157575   | associé | NA   |     1 |
+| Q61716176 | Q521036   | associé | NA   |     1 |
+| Q61716176 | Q630461   | associé | NA   |     1 |
+| Q61716176 | Q3578190  | associé | NA   |     1 |
+| Q61716176 | Q21041502 | associé | NA   |     1 |
+
 ### Tracer des représentations
 
 Il est possible de tracer directement le graphe retourné par
@@ -76,8 +96,8 @@ relations. Cela se fait en modifiant l’argument `depth`
 :
 
 ``` r
-bordeaux <- wdesr_get_graph("Q16541346", c('composante', 'associé'), depth = 2)
-plot(bordeaux)
+alsace <- wdesr_get_graph("Q61716176", c('composante', 'associé'), depth = 2)
+plot(alsace)
 ```
 
 ![](man/figures/README-wdesr-depth-1.png)<!-- -->

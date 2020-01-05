@@ -5,7 +5,7 @@
 \alias{WikidataESR-package}
 \alias{_PACKAGE}
 \alias{WikidataESR}
-\title{WikidataESR: From wikidata to R, for french ESR}
+\title{WikidataESR: From Wikidata to R, for french ESR}
 \description{
 This package uses data about the french
     university system (ESR) to build and plot graphs. Wikidata is a
