@@ -14,10 +14,11 @@ wdesr_get_graph(id, property, depth = 3, active_only = FALSE,
 
 \item{depth}{The depth of the graph (more or less) (default to 3).}
 
-\item{active_only}{TRUE to filter dissolved universities (default to FALSE).}
+\item{active_only}{\code{TRUE} to filter dissolved universities (default to
+\code{FALSE}).}
 
 \item{stop_at}{A list of type of nodes that must not be visited furthermore
-(default to "EPST").}
+(default to \code{EPST}).}
 }
 \value{
 A \code{\link{list}} of edges and vertices.
@@ -27,7 +28,7 @@ From a root wikipedia id, the function follows a given set of properties,
 building vertice and edges along the way.
 }
 \details{
-Data are cached: use \code{\link{wdesr_clear_cache}} to refresh data from wikidata.
+Data are cached: use \code{wdesr_clear_cache} to refresh data from wikidata.
 }
 \examples{
 g <- wdesr_get_graph("Q61716176", c('composante','associé'), 1)

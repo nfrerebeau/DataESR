@@ -12,7 +12,7 @@
 #'
 #' \code{get_statement_qualifier} gets the qualifiers of statements from a
 #' \code{wikidata} item.
-#' @param item An object of class \code{\link[wikidata]{WikidataR}}.
+#' @param item An object of class \code{\link[WikidataR]{WikidataR}}.
 #' @param property A \code{\link{character}} string giving the property to get
 #'  the data from.
 #' @param qualifier A \code{\link{character}} string giving the qualifier to
@@ -63,7 +63,7 @@ get_statement_qualifier <- function(item, ...)
 #' Get the ESR Status of a wikidata Item
 #'
 #' \code{get_item_status} gets the *legal status* of an ESR institution.
-#' @param item An object of class \code{\link[wikidata]{WikidataR}}.
+#' @param item An object of class \code{\link[WikidataR]{WikidataR}}.
 #' @note It is based on the instance_of property (P31) and converted thanks to a
 #' local dataset.
 #' @return The status the item.

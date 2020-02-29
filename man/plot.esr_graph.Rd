@@ -6,9 +6,11 @@
 \usage{
 \method{plot}{esr_graph}(x, layout = "kamadakawai", edge_label = TRUE,
   node_label = "alias", node_dates = FALSE, node_type = "text",
-  size_guide = FALSE)
+  size_guide = FALSE, ...)
 }
 \arguments{
+\item{x}{TODO.}
+
 \item{layout}{The layout to use to plot the graph as in
 \code{\link[sna]{gplot.layout}}.}
 
@@ -17,12 +19,14 @@
 \item{node_label}{Define the label for the nodess. Either "alias",
 "alias_date", "long", or "long_date" (default to "alias").}
 
+\item{node_dates}{TODO.}
+
 \item{node_type}{Define the type of drawing for the nodes. Either "text",
 "text_repel", "label", or "label_repel" (default to "text").}
 
 \item{size_guide}{TRUE to plot the guide for sizes (defalut to "FALSE").}
 
-\item{node_date}{TODO.}
+\item{...}{Currently not used.}
 }
 \value{
 A \code{\link[ggplot2]{ggplot}} object.

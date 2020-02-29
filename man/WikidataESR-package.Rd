@@ -25,8 +25,8 @@ This package uses data about the french
 \seealso{
 Useful links:
 \itemize{
-  \item \url{http://github.com/nfrerebeau/DataESR}
-  \item Report bugs at \url{http://github.com/nfrerebeau/DataESR/issues}
+  \item \url{http://github.com/nfrerebeau/WikidataESR}
+  \item Report bugs at \url{http://github.com/nfrerebeau/WikidataESR/issues}
 }
 
 }

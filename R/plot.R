@@ -3,22 +3,24 @@
 #' Plot
 #'
 #' Renders a graph.
+#' @param x TODO.
 #' @param layout The layout to use to plot the graph as in
 #' \code{\link[sna]{gplot.layout}}.
 #' @param edge_label TRUE to plot dates on edges (default to "TRUE").
 #' @param node_label Define the label for the nodess. Either "alias",
 #' "alias_date", "long", or "long_date" (default to "alias").
-#' @param node_date TODO.
+#' @param node_dates TODO.
 #' @param node_type Define the type of drawing for the nodes. Either "text",
 #' "text_repel", "label", or "label_repel" (default to "text").
 #' @param size_guide TRUE to plot the guide for sizes (defalut to "FALSE").
+#' @param ... Currently not used.
 #' @return A \code{\link[ggplot2]{ggplot}} object.
 # @example
 #' @author J. Gossa, N. Frerebeau
 #' @export
 plot.esr_graph <- function(x, layout = "kamadakawai", edge_label = TRUE,
                            node_label = "alias", node_dates = FALSE,
-                           node_type = "text", size_guide = FALSE) {
+                           node_type = "text", size_guide = FALSE, ...) {
   # Validation
   if(nrow(x$vertices) == 0 || nrow(x$edges) == 0 )
     stop("Empty ESR graph: something went wrong with the graph parameters.",
@@ -32,7 +34,7 @@ plot.esr_graph <- function(x, layout = "kamadakawai", edge_label = TRUE,
                           directed = TRUE)
   ggnet <- ggnetwork::ggnetwork(net, layout = layout, weights = "weight")
   ggnet <- ggnet[order(ggnet$level), ]
-  ggnet$statut <- factor(ggnet$statut, level = unique(ggnet$statut))
+  ggnet$statut <- factor(ggnet$statut, levels = unique(ggnet$statut))
 
   g <- ggplot(ggnet, aes(x = .data$x, y = .data$y,
                          xend = .data$xend, yend = .data$yend))

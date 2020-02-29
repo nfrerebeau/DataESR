@@ -21,8 +21,8 @@ Description: This package uses data about the french
     Enseignement Supérieur et Recherche (ESR). Its main purpose is to plot
     graphs about ESR universities relationship.
 License: GPL-3
-URL: http://github.com/nfrerebeau/DataESR
-BugReports: http://github.com/nfrerebeau/DataESR/issues
+URL: http://github.com/nfrerebeau/WikidataESR
+BugReports: http://github.com/nfrerebeau/WikidataESR/issues
 Depends: 
     R (>= 3.2),
     ggnetwork

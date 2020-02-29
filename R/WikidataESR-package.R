@@ -32,7 +32,8 @@
 
 #' @importFrom ggnetwork geom_edges geom_edgetext geom_nodes geom_nodelabel
 #' geom_nodelabel_repel geom_nodetext geom_nodetext_repel ggnetwork theme_blank
-#' @importFrom ggplot2 aes arrow geom_blank ggplot labs scale_alpha_manual unit
+#' @importFrom ggplot2 aes arrow geom_blank ggplot labs scale_alpha_manual
+#' scale_size_manual unit
 #' @importFrom memoise memoise forget
 #' @importFrom network network
 #' @importFrom rlang .data

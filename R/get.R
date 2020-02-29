@@ -70,14 +70,15 @@ wdesr_get_data <- function(id, simplify = TRUE) {
 #' From a root wikipedia id, the function follows a given set of properties,
 #' building vertice and edges along the way.
 #'
-#' Data are cached: use \code{\link{wdesr_clear_cache}} to refresh data from wikidata.
+#' Data are cached: use \code{wdesr_clear_cache} to refresh data from wikidata.
 #'
 #' @param id The wikidata id of the root.
 #' @param property The set of properties to follow.
 #' @param depth The depth of the graph (more or less) (default to 3).
-#' @param active_only TRUE to filter dissolved universities (default to FALSE).
+#' @param active_only \code{TRUE} to filter dissolved universities (default to
+#'  \code{FALSE}).
 #' @param stop_at A list of type of nodes that must not be visited furthermore
-#' (default to "EPST").
+#'  (default to \code{EPST}).
 #' @return A \code{\link{list}} of edges and vertices.
 #' @examples
 #' g <- wdesr_get_graph("Q61716176", c('composante','associé'), 1)
@@ -115,10 +116,9 @@ wdesr_get_graph <- function(id, property, depth = 3, active_only = FALSE,
 
 #' Get a sub graph of universities.
 #' @return A list of edges and vertices.
-#' @noRd
-#'
 #' @seealso \code{\link{wdesr_get_graph}}
-#' @author Julien Gossa, \email{gossa@unistra.fr}
+#' @author Julien Gossa
+#' @noRd
 wdesr_get_subgraph <- function(wgge, id, property, depth = 3,
                                active_only = FALSE, stop_at = c("EPST") ) {
 
@@ -158,14 +158,14 @@ wdesr_get_subgraph <- function(wgge, id, property, depth = 3,
     if(depth == 1) {
       wgge$vertices <- rbind(
         wgge$vertices,
-        subset(to, !id %in% wgge$vertices$id)
+        to[!(to$id %in% wgge$vertices$id), ]
       )
     } else {
       wgge$vertices <- rbind(
         wgge$vertices,
-        subset(to, !id %in% wgge$vertices$id && statut %in% stop_at)
+        to[!(to$id %in% wgge$vertices$id && to$statut %in% stop_at), ]
       )
-      for(id in subset(to, !statut %in% stop_at)$id) {
+      for(id in to[!(to$statut %in% stop_at), ]$id) {
         if (!id %in% wgge$vertices$id)
           wdesr_get_subgraph(wgge, id, property, depth-1, active_only, stop_at)
       }

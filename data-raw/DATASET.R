@@ -3,7 +3,7 @@ esr_status <- read.table(
   "./data-raw/esr_status.csv",
   header = TRUE, row.names = NULL,
   sep = ",", quote = "\"",
-  encoding = "utf-8", stringsAsFactors = FALSE
+  encoding = "UTF-8", stringsAsFactors = FALSE
 )
 esr_status$deprecated <- as.logical(esr_status$deprecated)
 
@@ -11,7 +11,7 @@ esr_level <- read.table(
   "./data-raw/esr_level.csv",
   header = TRUE, row.names = NULL,
   sep = ",", quote = "\"",
-  encoding = "utf-8", stringsAsFactors = FALSE
+  encoding = "UTF-8", stringsAsFactors = FALSE
 )
 
 usethis::use_data(esr_status, esr_level, overwrite = TRUE, internal = FALSE)

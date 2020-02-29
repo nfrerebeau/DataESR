@@ -11,7 +11,7 @@ get_item_status(item, ...)
 \method{get_item_status}{wikidata}(item)
 }
 \arguments{
-\item{item}{An object of class \code{\link[wikidata]{WikidataR}}.}
+\item{item}{An object of class \code{\link[WikidataR]{WikidataR}}.}
 }
 \value{
 The status the item.

@@ -35,7 +35,7 @@ get_statement_qualifier(item, ...)
 \method{get_statement_qualifier}{wikidata}(item, property, qualifier)
 }
 \arguments{
-\item{item}{An object of class \code{\link[wikidata]{WikidataR}}.}
+\item{item}{An object of class \code{\link[WikidataR]{WikidataR}}.}
 
 \item{property}{A \code{\link{character}} string giving the property to get
 the data from.}
