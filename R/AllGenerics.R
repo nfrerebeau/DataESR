@@ -60,13 +60,15 @@ get_statement_qualifier <- function(item, ...)
   UseMethod("get_statement_qualifier")
 
 # ==============================================================================
-#' Get the ESR Status of a wikidata Item
+#' Get the Status of a Wikidata Item
 #'
-#' \code{get_item_status} gets the *legal status* of an ESR institution.
+#' \code{get_item_status} gets the *legal status* of a French higher education
+#' institution.
 #' @param item An object of class \code{\link[WikidataR]{WikidataR}}.
-#' @note It is based on the instance_of property (P31) and converted thanks to a
-#' local dataset.
-#' @return The status the item.
+#' @note It is based on the "instance of" property of Wikidata (P31) and
+#' converted thanks to an internal dataset (see \code{\link{esr_status}}).
+#' @return A \code{\link{data.frame}}.
+#' @seealso \link{esr_status}
 #' @example inst/examples/ex-wikidata-esr.R
 #' @author J. Gossa, N. Frerebeau
 #' @keywords internal

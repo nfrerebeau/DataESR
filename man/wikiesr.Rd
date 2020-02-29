@@ -4,7 +4,7 @@
 \alias{wikiesr}
 \alias{get_item_status}
 \alias{get_item_status.wikidata}
-\title{Get the ESR Status of a wikidata Item}
+\title{Get the Status of a Wikidata Item}
 \usage{
 get_item_status(item, ...)
 
@@ -14,14 +14,15 @@ get_item_status(item, ...)
 \item{item}{An object of class \code{\link[WikidataR]{WikidataR}}.}
 }
 \value{
-The status the item.
+A \code{\link{data.frame}}.
 }
 \description{
-\code{get_item_status} gets the *legal status* of an ESR institution.
+\code{get_item_status} gets the *legal status* of a French higher education
+institution.
 }
 \note{
-It is based on the instance_of property (P31) and converted thanks to a
-local dataset.
+It is based on the "instance of" property of Wikidata (P31) and
+converted thanks to an internal dataset (see \code{\link{esr_status}}).
 }
 \examples{
 \donttest{
@@ -30,6 +31,9 @@ item <- WikidataR::get_item("Q13342")
 
 get_item_status(item)
 }
+}
+\seealso{
+\link{esr_status}
 }
 \author{
 J. Gossa, N. Frerebeau

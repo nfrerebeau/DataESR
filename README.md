@@ -43,13 +43,16 @@ Alsace :
 
   - L’*identifiant wikidata* est
     [Q61716176](https://www.wikidata.org/wiki/Q61716176) ;
-  - Les *propriétés* sont “composante” et “associé” ;
-  - Il est possible de fixer une *profondeur* pour l’exploration.
+  - Les *propriétés* sont `subsidiary` (“composante”) et `has_part`
+    (“associé”) ;
+  - Il est possible de fixer une *profondeur* pour
+l’exploration.
 
 <!-- end list -->
 
 ``` r
-alsace <- wdesr_get_graph("Q61716176", c('composante','associé'), 1)
+alsace <- wdesr_get_graph("Q61716176", property = c("subsidiary", "has_part"), 
+                          depth = 1)
 ```
 
 Pour faciliter les contributions, la fonction déclenche des warning pour
@@ -59,7 +62,7 @@ Elle retourne un objet contenant vertices et edges, qui représentent les
 établissements et leurs
 relations.
 
-| id        | label                                                   | alias                    | statut                     | level |
+| id        | label                                                   | alias                    | status                     | level |
 | :-------- | :------------------------------------------------------ | :----------------------- | :------------------------- | ----: |
 | Q157575   | université de Strasbourg                                | UdS                      | Université (EPSCP)         |     3 |
 | Q21041502 | Haute école des arts du Rhin                            | HEAR                     | école d’art                |     4 |
@@ -69,14 +72,14 @@ relations.
 | Q61716176 | université de Strasbourg                                | université de Strasbourg | Regroupement universitaire |     2 |
 | Q630461   | bibliothèque nationale et universitaire de Strasbourg   | BNUS                     | bibliothèque nationale     |     5 |
 
-| from      | to        | type    | date | depth |
-| :-------- | :-------- | :------ | :--- | ----: |
-| Q61716176 | Q280183   | associé | NA   |     1 |
-| Q61716176 | Q157575   | associé | NA   |     1 |
-| Q61716176 | Q521036   | associé | NA   |     1 |
-| Q61716176 | Q630461   | associé | NA   |     1 |
-| Q61716176 | Q3578190  | associé | NA   |     1 |
-| Q61716176 | Q21041502 | associé | NA   |     1 |
+| from      | to        | type      | date | depth |
+| :-------- | :-------- | :-------- | :--- | ----: |
+| Q61716176 | Q280183   | has\_part | NA   |     1 |
+| Q61716176 | Q157575   | has\_part | NA   |     1 |
+| Q61716176 | Q521036   | has\_part | NA   |     1 |
+| Q61716176 | Q630461   | has\_part | NA   |     1 |
+| Q61716176 | Q3578190  | has\_part | NA   |     1 |
+| Q61716176 | Q21041502 | has\_part | NA   |     1 |
 
 ### Tracer des représentations
 
@@ -96,7 +99,7 @@ relations. Cela se fait en modifiant l’argument `depth`
 :
 
 ``` r
-alsace <- wdesr_get_graph("Q61716176", c('composante', 'associé'), depth = 2)
+alsace <- wdesr_get_graph("Q61716176", c("subsidiary", "has_part"), depth = 2)
 plot(alsace)
 ```
 

@@ -2,38 +2,90 @@
 % Please edit documentation in R/get.R
 \name{wdesr_get_graph}
 \alias{wdesr_get_graph}
-\title{Get a graph of universities.}
+\title{Get a Graph of Universities}
 \usage{
 wdesr_get_graph(id, property, depth = 3, active_only = FALSE,
-  stop_at = c("EPST"))
+  stop_at = c("EPST"), verbose = getOption("verbose"))
 }
 \arguments{
-\item{id}{The wikidata id of the root.}
+\item{id}{A \code{\link{character}} string specifying the wikidata id of the
+root.}
 
-\item{property}{The set of properties to follow.}
+\item{property}{A \code{\link{character}} vector specifying the set of
+properties to follow (see details).}
 
-\item{depth}{The depth of the graph (more or less) (default to 3).}
+\item{depth}{An \code{\link{integer}} giving the depth of the graph
+(default to 3).}
 
-\item{active_only}{\code{TRUE} to filter dissolved universities (default to
-\code{FALSE}).}
+\item{active_only}{A \code{\link{logical}} scalar: should dissolved
+universities be filtered? If \code{TRUE}, dissolved universities are
+ignored.}
 
-\item{stop_at}{A list of type of nodes that must not be visited furthermore
-(default to \code{EPST}).}
+\item{stop_at}{A \code{\link{character}} vector specifying types of nodes
+that must not be visited furthermore (default to "\code{EPST}").}
+
+\item{verbose}{A \code{\link{logical}} scalar: should diagnostic messages be
+generated?}
 }
 \value{
 A \code{\link{list}} of edges and vertices.
 }
 \description{
-From a root wikipedia id, the function follows a given set of properties,
+From a root wikidata id, the function follows a given set of properties,
 building vertice and edges along the way.
 }
 \details{
-Data are cached: use \code{wdesr_clear_cache} to refresh data from wikidata.
+Allowed \code{property} values:
+\describe{
+ \item{inception}{Wikidata property
+  "\href{http://www.wikidata.org/wiki/Property:P571}{P571}".}
+ \item{dissolved}{Wikidata property
+  "\href{http://www.wikidata.org/wiki/Property:P576}{P576}".}
+ \item{has_part}{Wikidata property
+  "\href{http://www.wikidata.org/wiki/Property:P527}{P527}".}
+ \item{part_of}{Wikidata property
+  "\href{http://www.wikidata.org/wiki/Property:P361}{P361}".}
+ \item{subsidiary}{Wikidata property
+  "\href{http://www.wikidata.org/wiki/Property:P355}{P355}".}
+ \item{parent_organization}{Wikidata property
+  "\href{http://www.wikidata.org/wiki/Property:P749}{P749}."}
+ \item{replaces}{Wikidata property
+  "\href{http://www.wikidata.org/wiki/Property:P1365}{P1365}".}
+ \item{replaces_pit}{Wikidata properties
+  "\href{http://www.wikidata.org/wiki/Property:P1365}{P1365}" and
+  "\href{http://www.wikidata.org/wiki/Property:P585}{P585}"
+  (point in time).}
+ \item{replaced_by}{Wikidata property
+  "\href{http://www.wikidata.org/wiki/Property:P1366}{P1366}".}
+ \item{replaced_by_pit}{Wikidata properties
+  "\href{http://www.wikidata.org/wiki/Property:P1366}{P1366}" and
+  "\href{http://www.wikidata.org/wiki/Property:P585}{P585}"
+  (point in time).}
+ \item{separated_from}{Wikidata property
+  "\href{http://www.wikidata.org/wiki/Property:P807}{P807}".}
+ \item{separated_from_pit}{Wikidata properties
+  "\href{http://www.wikidata.org/wiki/Property:P807}{P807}" and
+  "\href{http://www.wikidata.org/wiki/Property:P585}{P585}"
+  (point in time).}
+ \item{member_of}{Wikidata property
+  "\href{http://www.wikidata.org/wiki/Property:P463}{P463}".}
+}
 }
 \examples{
-g <- wdesr_get_graph("Q61716176", c('composante','associé'), 1)
+\donttest{
+## Warning: an active internet connection is needed
+## Get a graph of Strasbourg University
+g <- wdesr_get_graph("Q61716176", property = c("subsidiary", "has_part"),
+                     depth = 2, verbose = TRUE)
 g$edges
 g$vertice
+
+## Plot the graph
+plot(g)
+}
+}
+\references{
+\href{https://www.wikidata.org}{Wikidata}.
 }
 \author{
 J. Gossa, N. Frerebeau

@@ -49,11 +49,12 @@ L'exploration se fait avec la fonction `wdesr_get_graph`.
 Par exemple, il est possible d'explorer les établissements du Site Alsace :
 
 - L'*identifiant wikidata* est [Q61716176](https://www.wikidata.org/wiki/Q61716176) ;
-- Les *propriétés* sont "composante" et "associé" ;
+- Les *propriétés* sont `subsidiary` ("composante") et `has_part` ("associé") ;
 - Il est possible de fixer une *profondeur* pour l'exploration.
 
 ```{r alsace}
-alsace <- wdesr_get_graph("Q61716176", c('composante','associé'), 1)
+alsace <- wdesr_get_graph("Q61716176", property = c("subsidiary", "has_part"), 
+                          depth = 1)
 ```
 
 Pour faciliter les contributions, la fonction déclenche des warning pour chaque problème potentiel lié aux données saisie dans wikidata.
@@ -81,7 +82,7 @@ plot(alsace)
 Il est souvent utile d'aller plus en profondeur pour explorer plus de relations. Cela se fait en modifiant l'argument `depth` :
 
 ```{r wdesr-depth, fig.width=7, fig.height=7}
-alsace <- wdesr_get_graph("Q61716176", c('composante', 'associé'), depth = 2)
+alsace <- wdesr_get_graph("Q61716176", c("subsidiary", "has_part"), depth = 2)
 plot(alsace)
 ```
 

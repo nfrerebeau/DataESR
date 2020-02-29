@@ -3,7 +3,7 @@
 \docType{data}
 \name{esr_status}
 \alias{esr_status}
-\title{Status of French ESR Institutions}
+\title{Status of French Higher Education Institutions}
 \format{A data frame with 6 variables:
  \describe{
    \item{id}{Wikipedia ID of the item.}
@@ -20,7 +20,7 @@
 esr_status
 }
 \description{
-A dataset containing the main status of French ESR
+A dataset containing the main status of French higher education
 institutions, together with some additionnal informations.
 }
 \seealso{

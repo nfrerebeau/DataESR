@@ -9,22 +9,26 @@
   size_guide = FALSE, ...)
 }
 \arguments{
-\item{x}{TODO.}
+\item{x}{An object of class \code{\link[=wdesr_get_graph]{esr_graph}}.}
 
-\item{layout}{The layout to use to plot the graph as in
-\code{\link[sna]{gplot.layout}}.}
+\item{layout}{A \code{\link{character}} string specifying the layout to be
+used to plot the graph as in \code{\link[sna]{gplot.layout}}.}
 
-\item{edge_label}{TRUE to plot dates on edges (default to "TRUE").}
+\item{edge_label}{A \code{\link{logical}} scalar: should the dates be plotted
+on edges (default to \code{TRUE})?}
 
-\item{node_label}{Define the label for the nodess. Either "alias",
-"alias_date", "long", or "long_date" (default to "alias").}
+\item{node_label}{A \code{\link{character}} string specifying the label of
+the nodes. It must be one of "\code{alias}" (the default) or "\code{label}".}
 
-\item{node_dates}{TODO.}
+\item{node_dates}{A \code{\link{logical}} scalar: should the date be added
+to the label of the nodes?}
 
-\item{node_type}{Define the type of drawing for the nodes. Either "text",
-"text_repel", "label", or "label_repel" (default to "text").}
+\item{node_type}{A \code{\link{character}} string specifying the geometry of
+the label of the nodes. It must be one of "\code{text}" (the default),
+"\code{text_repel}", "\code{label}" or "\code{label_repel}".}
 
-\item{size_guide}{TRUE to plot the guide for sizes (defalut to "FALSE").}
+\item{size_guide}{A \code{\link{logical}} scalar: should the sizes guide be
+plotted (defalut to \code{FALSE})?}
 
 \item{...}{Currently not used.}
 }
@@ -33,6 +37,22 @@ A \code{\link[ggplot2]{ggplot}} object.
 }
 \description{
 Renders a graph.
+}
+\examples{
+\donttest{
+## Warning: an active internet connection is needed
+## Get a graph of Strasbourg University
+g <- wdesr_get_graph("Q61716176", property = c("subsidiary", "has_part"),
+                     depth = 2, verbose = TRUE)
+g$edges
+g$vertice
+
+## Plot the graph
+plot(g)
+}
+}
+\seealso{
+\link{wdesr_get_graph}
 }
 \author{
 J. Gossa, N. Frerebeau
