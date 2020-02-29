@@ -1,93 +1,138 @@
-#' Load the data of one university.
+#' Load Data of a University
 #'
 #' @param id A \code{\link{character}} string specifying the the wikidata id of
-#' the university.
+#'  the university.
+#' @param verbose A \code{\link{logical}} scalar: should a diagnostic message be
+#'  generated?
 #' @return A \code{\link{data.frame}}.
-#' @examples wdesr_get_item("Q61716176")
+#' @seealso \link{wdesr_get_data}
+#' @example inst/examples/ex-get.R
 #' @references
-#'  \href{https://www.wikidata.org}{wikidata}
+#'  \href{https://www.wikidata.org}{Wikidata}.
 #' @author J. Gossa, N. Frerebeau
-#' @noRd
-wdesr_get_item <- function(id) {
+#' @keywords internal
+wdesr_get_item <- function(id, verbose = getOption("verbose")) {
 
+  if (verbose) message("Loading ", id, "...")
   item <- WikidataR::get_item(id = id)
   status <- get_item_status(item)
 
   data <- data.frame(
-    id               = id,
-    label            = get_item_label(item),
-    alias            = get_item_alias(item),
-    statut           = status$label,
-    level            = status$level,
+    id                  = id,
+    label               = get_item_label(item),
+    alias               = get_item_alias(item),
+    status              = status$label,
+    level               = status$level,
 
-    fondation        = get_statement_year(item, "P571"),
-    dissolution      = get_statement_year(item, "P576"),
+    inception           = get_statement_year(item, "P571"),
+    dissolved           = get_statement_year(item, "P576"),
 
-    associé          = get_statement_list(item, "P527"),
-    associé_de       = get_statement_list(item, "P361"),
+    has_part            = get_statement_list(item, "P527"),
+    part_of             = get_statement_list(item, "P361"),
 
-    composante       = get_statement_list(item, "P355"),
-    composante_de    = get_statement_list(item, "P749"),
+    subsidiary          = get_statement_list(item, "P355"),
+    parent_organization = get_statement_list(item, "P749"),
 
-    prédécesseur     = get_statement_list(item, "P1365"),
-    prédécesseur_pit = get_statement_qualifier(item, "P1365", "P585"),
-    successeur       = get_statement_list(item, "P1366"),
-    successeur_pit   = get_statement_qualifier(item, "P1366", "P585"),
+    replaces            = get_statement_list(item, "P1365"),
+    replaces_pit        = get_statement_qualifier(item, "P1365", "P585"),
+    replaced_by         = get_statement_list(item, "P1366"),
+    replaced_by_pit     = get_statement_qualifier(item, "P1366", "P585"),
 
-    séparé_de        = get_statement_list(item, "P807"),
-    séparé_de_pit    = get_statement_qualifier(item, "P807", "P585"),
+    separated_from      = get_statement_list(item, "P807"),
+    separated_from_pit  = get_statement_qualifier(item, "P807", "P585"),
 
-    membre_de        = get_statement_list(item, "P463"),
-    stringsAsFactors = FALSE
+    member_of           = get_statement_list(item, "P463"),
+    stringsAsFactors    = FALSE
   )
   return(data)
 }
 mdesr_get_item <- memoise::memoise(wdesr_get_item)
-wdesr_clear_cache <- function() memoise::forget(mdesr_get_item)
+mdesr_clear_cache <- function() memoise::forget(mdesr_get_item)
 
-#' Load the data of a set of universities.
+#' Load Data of a Set of Universities
 #'
 #' @param id A \code{\link{character}} vector specifying the wikidata IDs
 #'  to be accessed.
 #' @param simplify A \code{\link{logical}} scalar: should the result be
-#' simplified to a vector, matrix or higher dimensional array if possible?
-#' @return A \code{\link{dataframe}}.
-#' @examples r <- wdesr_get_data(c("Q3551576", "Q2013017"))
-#' @seealso \link{wdesr_get_item}
+#'  simplified to a data frame?
+#' @param verbose A \code{\link{logical}} scalar: should diagnostic messages be
+#'  generated?
+#' @return If \code{simplify} is \code{TRUE}, returns a
+#'  \code{\link{data.frame}}, else returns a \code{\link{list}}.
+#' @example inst/examples/ex-get.R
 #' @references
-#'  \href{https://www.wikidata.org}{wikidata}
+#'  \href{https://www.wikidata.org}{Wikidata}.
 #' @author J. Gossa, N. Frerebeau
-#' @noRd
-wdesr_get_data <- function(id, simplify = TRUE) {
-  items <- lapply(X = id, FUN = mdesr_get_item)
+#' @export
+wdesr_get_data <- function(id, simplify = TRUE,
+                           verbose = getOption("verbose")) {
+  items <- lapply(X = id, FUN = mdesr_get_item, verbose = verbose)
   if (simplify) items <- do.call(rbind.data.frame, items)
-  # paste0("Loading: ", wdid)
   return(items)
 }
 
-#' Get a graph of universities.
+#' Get a Graph of Universities
 #'
-#' From a root wikipedia id, the function follows a given set of properties,
+#' From a root wikidata id, the function follows a given set of properties,
 #' building vertice and edges along the way.
-#'
-#' Data are cached: use \code{wdesr_clear_cache} to refresh data from wikidata.
-#'
-#' @param id The wikidata id of the root.
-#' @param property The set of properties to follow.
-#' @param depth The depth of the graph (more or less) (default to 3).
-#' @param active_only \code{TRUE} to filter dissolved universities (default to
-#'  \code{FALSE}).
-#' @param stop_at A list of type of nodes that must not be visited furthermore
-#'  (default to \code{EPST}).
+#' @param id A \code{\link{character}} string specifying the wikidata id of the
+#'  root.
+#' @param property A \code{\link{character}} vector specifying the set of
+#'  properties to follow (see details).
+#' @param depth An \code{\link{integer}} giving the depth of the graph
+#'  (default to 3).
+#' @param active_only A \code{\link{logical}} scalar: should dissolved
+#'  universities be filtered? If \code{TRUE}, dissolved universities are
+#'  ignored.
+#' @param stop_at A \code{\link{character}} vector specifying types of nodes
+#'  that must not be visited furthermore (default to "\code{EPST}").
+#' @param verbose A \code{\link{logical}} scalar: should diagnostic messages be
+#'  generated?
+#' @details
+#' Allowed \code{property} values:
+#' \describe{
+#'  \item{inception}{Wikidata property
+#'   "\href{http://www.wikidata.org/wiki/Property:P571}{P571}".}
+#'  \item{dissolved}{Wikidata property
+#'   "\href{http://www.wikidata.org/wiki/Property:P576}{P576}".}
+#'  \item{has_part}{Wikidata property
+#'   "\href{http://www.wikidata.org/wiki/Property:P527}{P527}".}
+#'  \item{part_of}{Wikidata property
+#'   "\href{http://www.wikidata.org/wiki/Property:P361}{P361}".}
+#'  \item{subsidiary}{Wikidata property
+#'   "\href{http://www.wikidata.org/wiki/Property:P355}{P355}".}
+#'  \item{parent_organization}{Wikidata property
+#'   "\href{http://www.wikidata.org/wiki/Property:P749}{P749}."}
+#'  \item{replaces}{Wikidata property
+#'   "\href{http://www.wikidata.org/wiki/Property:P1365}{P1365}".}
+#'  \item{replaces_pit}{Wikidata properties
+#'   "\href{http://www.wikidata.org/wiki/Property:P1365}{P1365}" and
+#'   "\href{http://www.wikidata.org/wiki/Property:P585}{P585}"
+#'   (point in time).}
+#'  \item{replaced_by}{Wikidata property
+#'   "\href{http://www.wikidata.org/wiki/Property:P1366}{P1366}".}
+#'  \item{replaced_by_pit}{Wikidata properties
+#'   "\href{http://www.wikidata.org/wiki/Property:P1366}{P1366}" and
+#'   "\href{http://www.wikidata.org/wiki/Property:P585}{P585}"
+#'   (point in time).}
+#'  \item{separated_from}{Wikidata property
+#'   "\href{http://www.wikidata.org/wiki/Property:P807}{P807}".}
+#'  \item{separated_from_pit}{Wikidata properties
+#'   "\href{http://www.wikidata.org/wiki/Property:P807}{P807}" and
+#'   "\href{http://www.wikidata.org/wiki/Property:P585}{P585}"
+#'   (point in time).}
+#'  \item{member_of}{Wikidata property
+#'   "\href{http://www.wikidata.org/wiki/Property:P463}{P463}".}
+#' }
 #' @return A \code{\link{list}} of edges and vertices.
-#' @examples
-#' g <- wdesr_get_graph("Q61716176", c('composante','associé'), 1)
-#' g$edges
-#' g$vertice
+#' @references
+#'  \href{https://www.wikidata.org}{Wikidata}.
+#' @example inst/examples/ex-graph.R
 #' @author J. Gossa, N. Frerebeau
 #' @export
-wdesr_get_graph <- function(id, property, depth = 3, active_only = FALSE,
-                            stop_at = c("EPST") ) {
+wdesr_get_graph <- function(id, property, depth = 3,
+                            active_only = FALSE, stop_at = c("EPST"),
+                            verbose = getOption("verbose")) {
 
   wgge <- new.env()
   wgge$edges <- data.frame(
@@ -97,15 +142,14 @@ wdesr_get_graph <- function(id, property, depth = 3, active_only = FALSE,
   )
   wgge$vertices <- data.frame()
 
-  wdesr_get_subgraph(wgge, id, property, depth, active_only, stop_at)
+  wdesr_get_subgraph(wgge, id = id, property = property,
+                     depth = depth, active_only = active_only,
+                     stop_at = stop_at, verbose = verbose)
 
   wgge$vertices <- wgge$vertices[order(wgge$vertices$id), ]
   clean <- lapply(X = wgge$vertices,
                   FUN = function(x) if (is.list(x)) as.character(x) else x)
   wgge$vertices <- as.data.frame(clean, stringsAsFactors = FALSE)
-  # wgge$vertices <- wgge$vertices %>% dplyr::mutate_if(is.list, as.character) %>%
-    # dplyr::arrange(id)
-  #wgge$vertices$niveau <- factor(wgge$vertices$niveau, levels = wdesr.niveaux$niveau)
 
   res <- structure(
     list(edges = wgge$edges, vertices = wgge$vertices),
@@ -114,29 +158,31 @@ wdesr_get_graph <- function(id, property, depth = 3, active_only = FALSE,
   return(res)
 }
 
-#' Get a sub graph of universities.
-#' @return A list of edges and vertices.
+#' Get a Sub-Graph of Universities
+#'
+#' @param wgge An \code{\link{environment}}.
+#' @inheritParams wdesr_get_graph
+#' @return A \code{\link{list}} of edges and vertices.
 #' @seealso \code{\link{wdesr_get_graph}}
 #' @author Julien Gossa
+#' @keywords internal
 #' @noRd
 wdesr_get_subgraph <- function(wgge, id, property, depth = 3,
-                               active_only = FALSE, stop_at = c("EPST") ) {
+                               active_only = FALSE, stop_at = c("EPST"),
+                               verbose = getOption("verbose")) {
 
-  from <- wdesr_get_data(id)
-  #df.from$depth <- depth
+  from <- wdesr_get_data(id, simplify = TRUE, verbose = verbose)
   wgge$vertices <- rbind(wgge$vertices, from)
-
-  #print(wgge$vertices$id)
-  #print(wgge$vertices[, 1:2])
 
   props <- property[property %in% colnames(from)]
   if (length(props) == 0)
     # TODO: better error message
-    stop("Invalid properties.")
+    stop("Invalid properties: ", paste(property, collapse = ", "),
+         call. = FALSE)
 
   for(p in props) {
     ppit <- paste(p, "pit", sep = "_")
-    to <- wdesr_get_data(unlist(from[, p]))
+    to <- wdesr_get_data(unlist(from[, p]), verbose = verbose)
     # Remove dissolved
     if (active_only) to <- to[is.na(to$dissolution), ]
     # Remove existing to -> from edges
@@ -154,7 +200,6 @@ wdesr_get_subgraph <- function(wgge, id, property, depth = 3,
     )
     wgge$edges <- rbind(wgge$edges, edges)
 
-    #df.to$depth <- depth - 1
     if(depth == 1) {
       wgge$vertices <- rbind(
         wgge$vertices,
@@ -163,11 +208,13 @@ wdesr_get_subgraph <- function(wgge, id, property, depth = 3,
     } else {
       wgge$vertices <- rbind(
         wgge$vertices,
-        to[!(to$id %in% wgge$vertices$id && to$statut %in% stop_at), ]
+        to[!(to$id %in% wgge$vertices$id) && to$status %in% stop_at, ]
       )
-      for(id in to[!(to$statut %in% stop_at), ]$id) {
-        if (!id %in% wgge$vertices$id)
-          wdesr_get_subgraph(wgge, id, property, depth-1, active_only, stop_at)
+      for(id in to[!(to$status %in% stop_at), ]$id) {
+        if (!(id %in% wgge$vertices$id))
+          wdesr_get_subgraph(wgge, id = id, property = property,
+                             depth = depth-1, active_only = active_only,
+                             stop_at = stop_at, verbose = verbose)
       }
     }
   }

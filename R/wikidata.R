@@ -52,7 +52,7 @@ get_item_status.wikidata <- function(item) {
   if (is.null(instance_of_id)) {
     instance_of_id <- "NOID"
     warning(
-      "The instance of wikidata item ", item_id, " is not set.\n",
+      "The instance of the Wikidata item ", item_id, " is not set.\n",
       "* Default level (size of the node) is set to 7.\n",
       "* Please check the property P31 at https://www.wikidata.org/wiki/", item_id,
       call. = FALSE
@@ -65,7 +65,7 @@ get_item_status.wikidata <- function(item) {
 
     warning(
       "The instance of wikidata item ", item_id,
-      " is unknown by wikidataESR: ", label, ".\n",
+      " is unknown by WikidataESR: ", label, ".\n",
       "* Default level (size of the node) is set to 4.\n",
       "* Please check the property P31 at https://www.wikidata.org/wiki/", item_id,
       call. = FALSE
