@@ -30,3 +30,16 @@
 #' @family datasets
 #' @keywords datasets
 "esr_level"
+
+#' List of Dissolved French University
+#'
+#' A dataset containing French universities that disappeared in the 1970s.
+#' @format A data frame with 2 variables:
+#'  \describe{
+#'   \item{id}{A \code{\link{character}} string giving the wikidata id.}
+#'   \item{alias}{A \code{\link{character}} string giving the name of the
+#'   university.}
+#'  }
+#' @family datasets
+#' @keywords datasets
+"esr_dissolved"

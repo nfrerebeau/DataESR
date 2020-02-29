@@ -16,4 +16,13 @@ esr_level <- read.table(
   stringsAsFactors = FALSE
 )
 
-usethis::use_data(esr_status, esr_level, overwrite = FALSE, internal = FALSE)
+esr_dissolved <- read.table(
+  "./data-raw/esr_dissolved.csv",
+  header = TRUE, row.names = NULL,
+  sep = ",", quote = "\"",
+  fileEncoding = "UTF-8", encoding = "UTF-8",
+  stringsAsFactors = FALSE
+)
+
+usethis::use_data(esr_status, esr_level, esr_dissolved,
+                  overwrite = TRUE, internal = FALSE)

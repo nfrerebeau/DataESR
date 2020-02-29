@@ -19,7 +19,8 @@ A dataset containing arbitrary levels to institutions statuts.
 Used to set sizes when plotting things.
 }
 \seealso{
-Other datasets: \code{\link{esr_status}}
+Other datasets: \code{\link{esr_dissolved}},
+  \code{\link{esr_status}}
 }
 \concept{datasets}
 \keyword{datasets}

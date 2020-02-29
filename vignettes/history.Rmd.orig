@@ -1,0 +1,49 @@
+---
+title: "History of French Universities"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{History of French Universities}
+  %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
+editor_options:
+  chunk_output_type: console
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  fig.path = "history-",
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(WikidataESR)
+```
+
+The following graphs start with a university that disappeared in the 1970s and follow the properties `replaced_by` ([P1366](http://www.wikidata.org/wiki/Property:P1366)), `separated_from` ([P807](http://www.wikidata.org/wiki/Property:P807)), `parent_organization` ([P749](http://www.wikidata.org/wiki/Property:P749)) and `part_of` ([P361](http://www.wikidata.org/wiki/Property:P361)) to find all the institutions linked to it.
+
+```{r university, echo=FALSE}
+knitr::kable(esr_dissolved)
+```
+
+```{r graph, message=FALSE, warning=FALSE, out.width='100%', fig.width=7, fig.height=7, dpi = 150}
+## Warning: this may take a few minutes!
+# Get data
+graph_history <- lapply(
+  X = esr_dissolved$id,
+  FUN = wdesr_get_graph,
+  property = c('replaced_by', 'separated_from',
+               'parent_organization', 'part_of'),
+  depth = 10
+)
+# Plot all graphs
+invisible(
+  lapply(
+    X = graph_history,
+    FUN = function(i, ...) try(print(plot(i, ...)), silent = TRUE),
+    node_dates = TRUE,
+    node_type = "text_repel"
+  )
+)
+```

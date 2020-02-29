@@ -52,16 +52,16 @@ plot.esr_graph <- function(x, layout = "kamadakawai", edge_label = TRUE,
   )
   g <- g + geom_nodes(aes(
     color = .data$status,
-    alpha = ifelse(is.na(.data$dissolved), "actif", "dissous"),
+    alpha = ifelse(is.na(.data$dissolved), "active", "dissolved"),
     size = .data$status
   ))
   g <- g + make_node_geom(node_type)(
     aes(label = make_node_label(.data, type = node_label, dates = node_dates))
   )
-  g <- g + scale_alpha_manual(values = c(dissous = 0.6, actif = 1))
+  g <- g + scale_alpha_manual(values = c(dissolved = 0.6, active = 1))
   g <- g + scale_size_manual(values = node_size, guide = FALSE)
-  g <- g + labs(linetype = "Relation", size = "Statut",
-                colour = "Statut", alpha = "Etat")
+  g <- g + labs(linetype = "Relationship", size = "Status",
+                colour = "Status", alpha = "State")
   g <- g + theme_blank()
   if (edge_label && all(!is.na(x$edges$date)))
     g <- g + geom_edgetext(aes(label = .data$date))
@@ -73,7 +73,7 @@ make_node_label <- function(data, type = c("alias", "label"), dates = FALSE) {
   type <- match.arg(type, several.ok = FALSE)
   lab <- data[[type]]
   if (dates) {
-    from_to <- paste0("(", data$fondation, " - " , data$dissolution, ")")
+    from_to <- paste0("(", data$inception, " - " , data$dissolved, ")")
     lab <- paste(lab, from_to, sep = "\n")
   }
   return(lab)

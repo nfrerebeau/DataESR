@@ -20,3 +20,4 @@
 ^\.covrignore$
 ^paper\.md$
 ^paper\.bib$
+^vignettes/history\.Rmd\.orig$

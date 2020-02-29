@@ -1,0 +1,17 @@
+citHeader("To cite WikidataESR in publications use:")
+
+citEntry(entry = "Manual",
+  title        = "{WikidataESR}: From Wikidata to R, for French Higher Education System",
+  author       = c(person("Julien", "Gossa", role = c("aut", "cre")),
+                   person("Nicolas", "Frerebeau", role = "aut")),
+  year         = "2020",
+  organization = "Université de Strasbourg",
+  address      = "Strasbourg, France",
+  note         = "R package version 0.1.0",
+
+  textVersion  =
+  paste("Gossa, Julien and Frerebeau, Nicolas (2020).",
+        "WikidataESR: From Wikidata to R, for French Higher Education.",
+        "R package version 0.1.0.",
+        "Université de Strasbourg, Strasbourg, France.")
+)

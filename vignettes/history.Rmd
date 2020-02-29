@@ -1,0 +1,59 @@
+---
+title: "History of French Universities"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{History of French Universities}
+  %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
+editor_options:
+  chunk_output_type: console
+---
+
+
+
+
+```r
+library(WikidataESR)
+```
+
+The following graphs start with a university that disappeared in the 1970s and follow the properties `replaced_by` ([P1366](http://www.wikidata.org/wiki/Property:P1366)), `separated_from` ([P807](http://www.wikidata.org/wiki/Property:P807)), `parent_organization` ([P749](http://www.wikidata.org/wiki/Property:P749)) and `part_of` ([P361](http://www.wikidata.org/wiki/Property:P361)) to find all the institutions linked to it.
+
+
+|id        |alias                                  |
+|:---------|:--------------------------------------|
+|Q3551576  |université de Clermont-Ferrand         |
+|Q20791505 |université de Bordeaux                 |
+|Q209842   |Université de Paris                    |
+|Q3551621  |université de Lille                    |
+|Q2383462  |université de Lyon (1896-1969)         |
+|Q23197733 |ancienne université d'Orléans          |
+|Q64690423 |Université de Montpellier              |
+|Q1987282  |université de Rennes                   |
+|Q20774688 |École royale de dessin (Paris)         |
+|Q578023   |Ancienne université de Toulouse        |
+|Q20808141 |Academia argentinensis                 |
+|Q21592577 |université d'Aix-Marseille (1896-1971) |
+
+
+```r
+## Warning: this may take a few minutes!
+# Get data
+graph_history <- lapply(
+  X = esr_dissolved$id,
+  FUN = wdesr_get_graph,
+  property = c('replaced_by', 'separated_from',
+               'parent_organization', 'part_of'),
+  depth = 10
+)
+# Plot all graphs
+invisible(
+  lapply(
+    X = graph_history,
+    FUN = function(i, ...) try(print(plot(i, ...)), silent = TRUE),
+    node_dates = TRUE,
+    node_type = "text_repel"
+  )
+)
+```
+
+<img src="history-graph-1.png" title="plot of chunk graph" alt="plot of chunk graph" width="100%" /><img src="history-graph-2.png" title="plot of chunk graph" alt="plot of chunk graph" width="100%" /><img src="history-graph-3.png" title="plot of chunk graph" alt="plot of chunk graph" width="100%" /><img src="history-graph-4.png" title="plot of chunk graph" alt="plot of chunk graph" width="100%" /><img src="history-graph-5.png" title="plot of chunk graph" alt="plot of chunk graph" width="100%" /><img src="history-graph-6.png" title="plot of chunk graph" alt="plot of chunk graph" width="100%" /><img src="history-graph-7.png" title="plot of chunk graph" alt="plot of chunk graph" width="100%" /><img src="history-graph-8.png" title="plot of chunk graph" alt="plot of chunk graph" width="100%" /><img src="history-graph-9.png" title="plot of chunk graph" alt="plot of chunk graph" width="100%" /><img src="history-graph-10.png" title="plot of chunk graph" alt="plot of chunk graph" width="100%" /><img src="history-graph-11.png" title="plot of chunk graph" alt="plot of chunk graph" width="100%" />

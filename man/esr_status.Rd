@@ -24,7 +24,8 @@ A dataset containing the main status of French higher education
 institutions, together with some additionnal informations.
 }
 \seealso{
-Other datasets: \code{\link{esr_level}}
+Other datasets: \code{\link{esr_dissolved}},
+  \code{\link{esr_level}}
 }
 \concept{datasets}
 \keyword{datasets}
