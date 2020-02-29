@@ -5,7 +5,7 @@
 \alias{WikidataESR-package}
 \alias{_PACKAGE}
 \alias{WikidataESR}
-\title{WikidataESR: From Wikidata to R, for french ESR}
+\title{WikidataESR: From Wikidata to R, for French Higher Education System}
 \description{
 This package uses data about the french
     university system (ESR) to build and plot graphs. Wikidata is a
@@ -20,7 +20,6 @@ This package uses data about the french
  \strong{Type:} \tab Package \cr
  \strong{Version:} \tab 0.1.0 \cr
  \strong{License:} \tab GPL-3 \cr
- \strong{DOI:} \tab \href{https://doi.org/xxx}{xxx}
 }
 }
 \seealso{
@@ -44,10 +43,10 @@ Useful links:
 Julien Gossa\cr
 \email{gossa@unistra.fr}
 
-IRAMAT-CRP2A (UMR 5060)\cr
-Maison de l'Archéologie\cr
-Université Bordeaux Montaigne\cr
-F-33607 Pessac cedex\cr
+ICube (UMR 7357)\cr
+300, boulevard Sébastien Brant\cr
+CS 10413\cr
+F-67412 Illkirch cedex\cr
 France
 }
 \keyword{internal}

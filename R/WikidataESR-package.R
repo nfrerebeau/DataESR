@@ -4,7 +4,7 @@
 #'  \strong{Type:} \tab Package \cr
 #'  \strong{Version:} \tab 0.1.0 \cr
 #'  \strong{License:} \tab GPL-3 \cr
-#'  \strong{DOI:} \tab \href{https://doi.org/xxx}{xxx}
+#  \strong{DOI:} \tab \href{https://doi.org/xxx}{xxx}
 #' }
 #' @author
 #' \strong{Full list of authors and contributors} (alphabetic order)
@@ -19,10 +19,10 @@
 #' Julien Gossa\cr
 #' \email{gossa@@unistra.fr}
 #'
-#' IRAMAT-CRP2A (UMR 5060)\cr
-#' Maison de l'Archéologie\cr
-#' Université Bordeaux Montaigne\cr
-#' F-33607 Pessac cedex\cr
+#' ICube (UMR 7357)\cr
+#' 300, boulevard Sébastien Brant\cr
+#' CS 10413\cr
+#' F-67412 Illkirch cedex\cr
 #' France
 #' @name WikidataESR-package
 #' @aliases WikidataESR
