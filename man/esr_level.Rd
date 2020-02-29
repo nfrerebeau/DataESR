@@ -20,7 +20,7 @@ Used to set sizes when plotting things.
 }
 \seealso{
 Other datasets: \code{\link{esr_dissolved}},
-  \code{\link{esr_status}}
+  \code{\link{esr_merged}}, \code{\link{esr_status}}
 }
 \concept{datasets}
 \keyword{datasets}

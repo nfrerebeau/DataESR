@@ -24,5 +24,13 @@ esr_dissolved <- read.table(
   stringsAsFactors = FALSE
 )
 
-usethis::use_data(esr_status, esr_level, esr_dissolved,
+esr_merged <- read.table(
+  "./data-raw/esr_merged.csv",
+  header = TRUE, row.names = NULL,
+  sep = ",", quote = "\"",
+  fileEncoding = "UTF-8", encoding = "UTF-8",
+  stringsAsFactors = FALSE
+)
+
+usethis::use_data(esr_status, esr_level, esr_dissolved, esr_merged,
                   overwrite = TRUE, internal = FALSE)

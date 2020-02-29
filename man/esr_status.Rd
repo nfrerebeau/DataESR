@@ -25,7 +25,7 @@ institutions, together with some additionnal informations.
 }
 \seealso{
 Other datasets: \code{\link{esr_dissolved}},
-  \code{\link{esr_level}}
+  \code{\link{esr_level}}, \code{\link{esr_merged}}
 }
 \concept{datasets}
 \keyword{datasets}
