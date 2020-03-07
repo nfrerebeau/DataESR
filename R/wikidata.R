@@ -59,7 +59,8 @@ get_item_status.wikidata <- function(item) {
     )
   }
 
-  if (!(instance_of_id %in% esr_status$id)) {
+  cache <- get("status", envir = esr_cache)
+  if (!(instance_of_id %in% cache$id)) {
     it <- WikidataR::get_item(id = instance_of_id)
     label <- get_item_alias(it)
 
@@ -71,19 +72,23 @@ get_item_status.wikidata <- function(item) {
       call. = FALSE
     )
 
-    esr_status <- data.frame(
+    status <- data.frame(
       id         = instance_of_id,
       label      = label,
       deprecated = TRUE,
       level      = 5,
       wikipedia  = "",
-      note       = "statut inexistant dans la base wikidataESR",
+      note       = "unknown status",
       stringsAsFactors = FALSE
     )
+    # Update cache
+    cache <- rbind.data.frame(cache, status, stringsAsFactors = FALSE)
+    assign("status", cache, envir = esr_cache)
+  } else {
+    status <- cache[cache$id == instance_of_id, , drop = FALSE]
   }
 
-  status <- esr_status[esr_status$id == instance_of_id, ]
-  if (status$deprecated & getOption("verbose")) {
+  if (status$deprecated) {
     note <- ifelse(status$note != "", status$note, "status not specific enough")
     warning(
       "The instance of wikidata item ", item_id,

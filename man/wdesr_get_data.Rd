@@ -11,7 +11,7 @@ wdesr_get_data(id, simplify = TRUE, verbose = getOption("verbose"))
 to be accessed.}
 
 \item{simplify}{A \code{\link{logical}} scalar: should the result be
-simplified to a data frame?}
+simplified to a data frame (default to \code{TRUE})?}
 
 \item{verbose}{A \code{\link{logical}} scalar: should diagnostic messages be
 generated?}

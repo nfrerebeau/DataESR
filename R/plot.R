@@ -27,7 +27,7 @@ plot.esr_graph <- function(x, layout = "kamadakawai", edge_label = TRUE,
                            node_label = "alias", node_dates = FALSE,
                            node_type = "text", size_guide = FALSE, ...) {
   # Validation
-  if(nrow(x$vertices) == 0 || nrow(x$edges) == 0 )
+  if(nrow(x$vertices) == 0 || nrow(x$edges) == 0)
     stop("Empty graph: something went wrong with the graph parameters.",
          call. = FALSE)
 
@@ -35,10 +35,14 @@ plot.esr_graph <- function(x, layout = "kamadakawai", edge_label = TRUE,
   node_size <- 30 / x$vertices$level
   names(node_size) <- x$vertices$status
 
-  net <- network::network(x$edges, vertex.attr = x$vertices,
-                          matrix.type = "edgelist", ignore.eval = FALSE,
-                          directed = TRUE)
-  ggnet <- ggnetwork::ggnetwork(net, layout = layout, weights = "weight")
+  net <- network::network(
+    x = x$edges,
+    vertex.attr = x$vertices,
+    matrix.type = "edgelist",
+    ignore.eval = FALSE,
+    directed = TRUE
+  )
+  ggnet <- ggnetwork::ggnetwork(x = net, layout = layout, weights = "weight")
   ggnet <- ggnet[order(ggnet$level), ]
   ggnet$status <- factor(ggnet$status, levels = unique(ggnet$status))
 

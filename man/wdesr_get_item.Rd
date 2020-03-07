@@ -14,7 +14,10 @@ the university.}
 generated?}
 }
 \value{
-A \code{\link{data.frame}}.
+A \code{\link{list}} containing the following components:
+ \describe{
+  \item{TODO}{TODO.}
+ }
 }
 \description{
 Load Data of a University

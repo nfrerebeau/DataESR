@@ -4,7 +4,10 @@
 #'  the university.
 #' @param verbose A \code{\link{logical}} scalar: should a diagnostic message be
 #'  generated?
-#' @return A \code{\link{data.frame}}.
+#' @return A \code{\link{list}} containing the following components:
+#'  \describe{
+#'   \item{TODO}{TODO.}
+#'  }
 #' @seealso \link{wdesr_get_data}
 #' @example inst/examples/ex-get.R
 #' @references
@@ -13,48 +16,54 @@
 #' @keywords internal
 wdesr_get_item <- function(id, verbose = getOption("verbose")) {
 
-  if (verbose) message("Loading ", id, "...")
-  item <- WikidataR::get_item(id = id)
-  status <- get_item_status(item)
+  id <- as.character(id)
 
-  data <- data.frame(
-    id                  = id,
-    label               = get_item_label(item),
-    alias               = get_item_alias(item),
-    status              = status$label,
-    level               = status$level,
+  # Check if we already downloaded the data for the given id
+  if (exists(id, envir = esr_cache)){
+    if (verbose) message(sprintf("Get %s from cache...", id))
+    item_data <- get(id, envir = esr_cache)
+  } else {
+    if (verbose) message(sprintf("Download %s from Wikidata...", id))
+    item <- WikidataR::get_item(id = id)
+    status <- get_item_status(item)
 
-    inception           = get_statement_year(item, "P571"),
-    dissolved           = get_statement_year(item, "P576"),
+    item_data <- list(
+      id                  = id,
+      label               = get_item_label(item),
+      alias               = get_item_alias(item),
+      status              = status$label,
+      level               = status$level,
 
-    has_part            = get_statement_list(item, "P527"),
-    part_of             = get_statement_list(item, "P361"),
+      inception           = get_statement_year(item, "P571"),
+      dissolved           = get_statement_year(item, "P576"),
 
-    subsidiary          = get_statement_list(item, "P355"),
-    parent_organization = get_statement_list(item, "P749"),
+      has_part            = get_statement_list(item, "P527"),
+      part_of             = get_statement_list(item, "P361"),
 
-    replaces            = get_statement_list(item, "P1365"),
-    replaces_pit        = get_statement_qualifier(item, "P1365", "P585"),
-    replaced_by         = get_statement_list(item, "P1366"),
-    replaced_by_pit     = get_statement_qualifier(item, "P1366", "P585"),
+      subsidiary          = get_statement_list(item, "P355"),
+      parent_organization = get_statement_list(item, "P749"),
 
-    separated_from      = get_statement_list(item, "P807"),
-    separated_from_pit  = get_statement_qualifier(item, "P807", "P585"),
+      replaces            = get_statement_list(item, "P1365"),
+      replaces_pit        = get_statement_qualifier(item, "P1365", "P585"),
+      replaced_by         = get_statement_list(item, "P1366"),
+      replaced_by_pit     = get_statement_qualifier(item, "P1366", "P585"),
 
-    member_of           = get_statement_list(item, "P463"),
-    stringsAsFactors    = FALSE
-  )
-  return(data)
+      separated_from      = get_statement_list(item, "P807"),
+      separated_from_pit  = get_statement_qualifier(item, "P807", "P585"),
+
+      member_of           = get_statement_list(item, "P463")
+    )
+    assign(id, item_data, envir = esr_cache)
+  }
+  return(item_data)
 }
-mdesr_get_item <- memoise::memoise(wdesr_get_item)
-mdesr_clear_cache <- function() memoise::forget(mdesr_get_item)
 
 #' Load Data of a Set of Universities
 #'
 #' @param id A \code{\link{character}} vector specifying the wikidata IDs
 #'  to be accessed.
 #' @param simplify A \code{\link{logical}} scalar: should the result be
-#'  simplified to a data frame?
+#'  simplified to a data frame (default to \code{TRUE})?
 #' @param verbose A \code{\link{logical}} scalar: should diagnostic messages be
 #'  generated?
 #' @return If \code{simplify} is \code{TRUE}, returns a
@@ -66,15 +75,20 @@ mdesr_clear_cache <- function() memoise::forget(mdesr_get_item)
 #' @export
 wdesr_get_data <- function(id, simplify = TRUE,
                            verbose = getOption("verbose")) {
-  items <- lapply(X = id, FUN = mdesr_get_item, verbose = verbose)
-  if (simplify) items <- do.call(rbind.data.frame, items)
+  items <- lapply(X = id, FUN = wdesr_get_item, verbose = verbose)
+  # Problem: returns factor instead of character (issue with network)
+  # See .onAttach (zzz.R)
+  if (simplify) {
+    items <- lapply(X = items, FUN = cbind.data.frame)
+    items <- do.call(rbind.data.frame, items)
+  }
   return(items)
 }
 
 #' Get a Graph of Universities
 #'
-#' From a root wikidata id, the function follows a given set of properties,
-#' building vertice and edges along the way.
+#' From a root wikidata \code{id}, the function follows a given set of
+#' properties, building vertice and edges along the way.
 #' @param id A \code{\link{character}} string specifying the wikidata id of the
 #'  root.
 #' @param property A \code{\link{character}} vector specifying the set of
@@ -147,8 +161,10 @@ wdesr_get_graph <- function(id, property, depth = 3,
                      stop_at = stop_at, verbose = verbose)
 
   wgge$vertices <- wgge$vertices[order(wgge$vertices$id), ]
-  clean <- lapply(X = wgge$vertices,
-                  FUN = function(x) if (is.list(x)) as.character(x) else x)
+  clean <- lapply(
+    X = wgge$vertices,
+    FUN = function(x) if (is.list(x)) as.character(x) else x
+  )
   wgge$vertices <- as.data.frame(clean, stringsAsFactors = FALSE)
 
   res <- structure(
@@ -182,7 +198,7 @@ wdesr_get_subgraph <- function(wgge, id, property, depth = 3,
 
   for(p in props) {
     ppit <- paste(p, "pit", sep = "_")
-    to <- wdesr_get_data(unlist(from[, p]), verbose = verbose)
+    to <- wdesr_get_data(unlist(from[, p]), simplify = TRUE, verbose = verbose)
     # Remove dissolved
     if (active_only) to <- to[is.na(to$dissolution), ]
     # Remove existing to -> from edges

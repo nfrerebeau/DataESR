@@ -28,7 +28,6 @@ Depends:
     ggnetwork
 Imports:
     WikidataR,
-    memoise,
     network,
     ggplot2 (>= 2.0.0),
     rlang

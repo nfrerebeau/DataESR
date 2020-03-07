@@ -31,8 +31,8 @@ generated?}
 A \code{\link{list}} of edges and vertices.
 }
 \description{
-From a root wikidata id, the function follows a given set of properties,
-building vertice and edges along the way.
+From a root wikidata \code{id}, the function follows a given set of
+properties, building vertice and edges along the way.
 }
 \details{
 Allowed \code{property} values:
